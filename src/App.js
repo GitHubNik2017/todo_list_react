@@ -74,8 +74,6 @@ class App extends Component {
             });
         }
         this.clearInputs();
-
-        console.log(this.state.TodoList);
     }
 
     clearInputs() {
@@ -174,7 +172,6 @@ class App extends Component {
                     item.overdue = false;
                 }
             });
-            console.log("sdfsf");
         } else {
             clearInterval(this.interval)
         }
@@ -201,8 +198,6 @@ class App extends Component {
         } else if (id === 'grand') {
             return this.state.TodoList.filter((item) => (item.filter === id))
         }
-
-        console.log(this.state.TodoList);
     }
 
     displayTodo(id) {
@@ -212,11 +207,8 @@ class App extends Component {
     }
 
     render() {
-
-        const listArray = this.filterItem();
         localStorage.setItem('Items', JSON.stringify(this.state.TodoList));
-
-        console.log(this.state.TodoList);
+        const listArray = this.filterItem();
         const listEntries = listArray.map((item, i) => {
             return (
                 //<tr className={item.completed ? "completed" : item.overdue ? "overdue" : "" } key={i}>
