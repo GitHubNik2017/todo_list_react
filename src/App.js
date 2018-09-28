@@ -1,16 +1,9 @@
 import React, {Component} from 'react';
 import {
     Button,
-    ListGroup,
-    ListGroupItem,
-    Glyphicon,
     FormGroup,
     FormControl,
     ControlLabel,
-    Form,
-    ButtonToolbar,
-    ToggleButton,
-    ToggleButtonGroup,
     ButtonGroup
 } from 'react-bootstrap';
 import './App.css';
