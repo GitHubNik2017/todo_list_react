@@ -3,12 +3,10 @@ h1 {
 }
 
 .form {
-    /*float: left;*/
     width: 10%;
 }
 
 .todo-list {
-    /*float: left;*/
     width: 70%;
     margin-left: 100px;
     margin-top: 26px;
