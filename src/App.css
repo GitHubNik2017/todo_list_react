@@ -1,0 +1,46 @@
+h1 {
+    text-align: center;
+}
+
+.form {
+    /*float: left;*/
+    width: 10%;
+}
+
+.todo-list {
+    /*float: left;*/
+    width: 70%;
+    margin-left: 100px;
+    margin-top: 26px;
+}
+
+.button-group {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.table {
+    table-layout: fixed;
+    word-break: break-all;
+}
+
+.completed {
+    background-color: lightgreen;
+}
+
+.overdue {
+    background-color: lightcoral;
+}
+
+.block {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.left {
+    flex-grow: 2;
+}
+
+.right {
+    flex-grow: 2;
+}
