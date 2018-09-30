@@ -18,7 +18,6 @@ class App extends Component {
 			description: '',
 			importance: '',
 			date: '',
-			date_finish: '',
 			filter: '',
 			input: 'Submit',
 			index: '',
@@ -55,7 +54,6 @@ class App extends Component {
 					activeFilter: 'all'
 				});
 		} else if (this.state.input === 'Edit') {
-			//this.state.input = 'Submit';
 			const index = Number(this.state.index);
 
 			let stateCopy = Object.assign({}, this.state);
@@ -135,6 +133,7 @@ class App extends Component {
 		let date = new Date();
 		stateCopy.TodoList[index].completed = !stateCopy.TodoList[index].completed;
 		stateCopy.TodoList[index].overdue = !stateCopy.TodoList[index].overdue;
+
 		if (stateCopy.TodoList[index].completed) {
 			stateCopy.TodoList[index].date_finish = App.getDateComplete(date);
 		} else {
