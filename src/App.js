@@ -19,7 +19,6 @@ class App extends Component {
 			importance: '',
 			date: '',
 			date_finish: '',
-			date_delay: '',
 			filter: '',
 			input: 'Submit',
 			index: '',
@@ -29,18 +28,23 @@ class App extends Component {
 
 	addItem(e) {
 		e.preventDefault();
+		let date, date_delay;
+		if (this.state.date && typeof(this.state.date) !== 'string') {
+			date = this.state.date.format('YYYY.MM.DD HH:mm');
+			date_delay = this.state.date.valueOf();
+		}
 
 		if (this.state.input === 'Submit') {
-			let date = this.state.date ? this.state.date.format('YYYY.MM.DD HH:mm') : '';
+
 			let obj = {
 				id: this.state.TodoList.length,
 				completed: false,
 				overdue: false,
 				title: this.state.title,
 				description: this.state.description,
-				date: date,
+				date: date || this.state.date,
 				date_finish: '',
-				date_delay: this.state.date.valueOf(),
+				date_delay: date_delay,
 				filter: this.state.filter || 'usual',
 				editing: false
 			};
@@ -51,27 +55,26 @@ class App extends Component {
 					activeFilter: 'all'
 				});
 		} else if (this.state.input === 'Edit') {
-			this.state.input = 'Submit';
+			//this.state.input = 'Submit';
 			const index = Number(this.state.index);
-			let date = this.state.date ? this.inputDate.state.selectedDate._d.valueOf() : '';
 
-			this.state.TodoList[index].title = this.inputTitle.value;
-			this.state.TodoList[index].description = this.inputDescription.value;
-			this.state.TodoList[index].filter = this.inputFilter.value;
-			this.state.TodoList[index].date = this.inputDate.state.inputValue;
-			this.state.TodoList[index].date_delay = date;
+			let stateCopy = Object.assign({}, this.state);
+			stateCopy.TodoList[index] = Object.assign({}, stateCopy.TodoList[index]);
+			stateCopy.TodoList[index].title = this.state.title;
+			stateCopy.TodoList[index].description = this.state.description;
+			stateCopy.TodoList[index].filter = this.state.filter;
+			stateCopy.TodoList[index].date = date || this.state.date;
+			stateCopy.TodoList[index].date_delay = date_delay;
 
 			this.setState({
-				TodoList: this.state.TodoList
+				stateCopy,
+				input: 'Submit'
 			});
 		}
 		this.clearInputs();
 	}
 
 	clearInputs() {
-		this.inputTitle.value = '';
-		this.inputDescription.value = '';
-		this.inputFilter.value = '';
 		this.state.title = '';
 		this.state.description = '';
 		this.state.filter = '';
@@ -83,35 +86,29 @@ class App extends Component {
 			return item.id === id;
 		});
 
-		this.inputTitle.value = this.state.TodoList[index].title;
 		this.state.title = this.state.TodoList[index].title;
-		this.inputDescription.value = this.state.TodoList[index].description;
 		this.state.description = this.state.TodoList[index].description;
-		this.inputFilter.value = this.state.TodoList[index].filter;
 		this.state.filter = this.state.TodoList[index].filter;
-		this.inputDate.value = this.state.TodoList[index].date;
 		this.state.date = this.state.TodoList[index].date;
-		this.state.input = 'Edit';
-		this.state.index = index;
 
 		this.setState({
-			TodoList: this.state.TodoList
+			index: index,
+			input: 'Edit'
 		});
 	}
 
 	deleteItem(id) {
-		let index = this.state.TodoList.findIndex(function (item) {
+		let stateCopy = Object.assign({}, this.state);
+		let index = stateCopy.TodoList.findIndex(function (item) {
 			return item.id === id;
 		});
-		this.state.TodoList.splice(index, 1);
+		stateCopy.TodoList.splice(index, 1);
 
-		for (let i = 0; i < this.state.TodoList.length; i++) {
-			this.state.TodoList[i].id = i;
+		for (let i = 0; i < stateCopy.TodoList.length; i++) {
+			stateCopy.TodoList[i].id = i;
 		}
 
-		this.setState({
-			TodoList: this.state.TodoList
-		});
+		this.setState({stateCopy});
 	}
 
 
@@ -131,22 +128,20 @@ class App extends Component {
 	}
 
 	completedItem(id) {
-		let index = this.state.TodoList.findIndex(function (item) {
+		let stateCopy = Object.assign({}, this.state);
+		let index = stateCopy.TodoList.findIndex(function (item) {
 			return item.id === id;
 		});
 		let date = new Date();
-		this.state.TodoList[index].completed = !this.state.TodoList[index].completed;
-		this.state.TodoList[index].overdue = !this.state.TodoList[index].overdue;
-		if (this.state.TodoList[index].completed) {
-			this.state.TodoList[index].date_finish = App.getDateComplete(date);
+		stateCopy.TodoList[index].completed = !stateCopy.TodoList[index].completed;
+		stateCopy.TodoList[index].overdue = !stateCopy.TodoList[index].overdue;
+		if (stateCopy.TodoList[index].completed) {
+			stateCopy.TodoList[index].date_finish = App.getDateComplete(date);
 		} else {
-			this.state.TodoList[index].date_finish = '';
+			stateCopy.TodoList[index].date_finish = '';
 		}
 
-		this.setState({
-			TodoList: this.state.TodoList
-		});
-
+		this.setState({stateCopy});
 	}
 
 	componentDidMount() {
@@ -154,20 +149,17 @@ class App extends Component {
 	}
 
 	overdue() {
-
-		if (this.state.TodoList.length) {
+		let stateCopy = Object.assign({}, this.state);
+		if (stateCopy.TodoList.length) {
 			let date = new Date().valueOf();
-			this.state.TodoList.map(function (item) {
+			stateCopy.TodoList.map(function (item) {
 				item.overdue = !!(item.date_delay && item.date_delay <= date && !item.completed);
 			});
 		} else {
 			clearInterval(this.interval);
 		}
 
-		this.setState({
-			TodoList: this.state.TodoList
-		});
-
+		this.setState({stateCopy});
 	}
 
 	componentWillUnmount() {
@@ -177,14 +169,15 @@ class App extends Component {
 	filterItem() {
 		const id = this.state.activeFilter;
 
-		if (id === 'all') {
-			return this.state.TodoList;
-		} else if (id === 'usual') {
+		switch (id) {
+		case 'usual':
 			return this.state.TodoList.filter(item => (item.filter === id));
-		} else if (id === 'important') {
+		case 'important':
 			return this.state.TodoList.filter((item) => (item.filter === id));
-		} else if (id === 'grand') {
+		case 'grand':
 			return this.state.TodoList.filter((item) => (item.filter === id));
+		default:
+			return this.state.TodoList;
 		}
 	}
 
@@ -238,7 +231,6 @@ class App extends Component {
 								<FormControl
 									required
 									type="text"
-									inputRef={input => this.inputTitle = input}
 									onChange={event => this.setState({title: event.target.value})}
 									value={this.state.title}/>
 							</FormGroup>
@@ -247,7 +239,6 @@ class App extends Component {
 								<FormControl
 									required
 									componentClass="textarea"
-									inputRef={(input) => this.inputDescription = input}
 									onChange={event => this.setState({description: event.target.value})}
 									value={this.state.description}/>
 							</FormGroup>
@@ -256,7 +247,6 @@ class App extends Component {
 								<FormControl
 									componentClass="select"
 									value={this.state.filter}
-									inputRef={(input) => this.inputFilter = input}
 									onChange={event => this.setState({filter: event.target.value})}>
 									<option value="usual">Обычное</option>
 									<option value="important">Важное</option>
@@ -267,12 +257,14 @@ class App extends Component {
 								<Datetime
 									timeFormat="HH:mm"
 									dateFormat="YYYY.MM.DD"
-									ref={(ref) => this.inputDate = ref}
 									onChange={date => this.setState({date: date})}
 									value={this.state.date}
 								/>
 							</div>
-							<Button type="submit" ref={(ref) => this.submitInput = ref}>{this.state.input}</Button>
+							<Button
+								type="submit"
+								onChange={event => this.setState({input: event.target.value})}
+							>{this.state.input}</Button>
 						</form>
 					</div>
 					<div className="todo-list right">
